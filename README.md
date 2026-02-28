@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Sinh Học 4.0 - Hướng dẫn triển khai
 
-# Run and deploy your AI Studio app
+Ứng dụng trắc nghiệm sinh học nâng cao với phản hồi AI và hệ thống tích lũy điểm.
 
-This contains everything you need to run your app locally.
+## 1. Triển khai lên Vercel
 
-View your app in AI Studio: https://ai.studio/apps/ace7115a-4921-42d0-a8ab-0e40f2df8a02
+### Bước 1: Chuẩn bị mã nguồn
+- Đảm bảo mã nguồn đã được đẩy lên GitHub.
 
-## Run Locally
+### Bước 2: Cấu hình trên Vercel
+1. Truy cập [Vercel Dashboard](https://vercel.com/dashboard).
+2. Nhấn **Add New** -> **Project**.
+3. Chọn repository chứa mã nguồn này.
+4. Trong phần **Environment Variables**, thêm biến sau:
+   - **Key:** `GEMINI_API_KEY`
+   - **Value:** (Mã API Key Gemini của bạn, lấy tại [Google AI Studio](https://aistudio.google.com/app/apikey))
+5. Nhấn **Deploy**.
 
-**Prerequisites:**  Node.js
+## 2. Cấu hình Google Sheet (Đồng bộ điểm)
 
+Để đồng bộ điểm tích lũy, bạn cần tạo một Google Script (Web App) và dán URL vào phần **Cấu hình Sheet** trong ứng dụng.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Mã Google Script (Tham khảo):
+
+```javascript
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  
+  sheet.appendRow([
+    new Date(),
+    data.studentId,
+    data.studentName,
+    data.score,
+    data.totalScore,
+    data.aiFeedback
+  ]);
+  
+  return ContentService.createTextOutput(JSON.stringify({"result": "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+## 3. Tác giả
+- **Cô Kiều Thị Kim Thu** - THPT Dương Xá
